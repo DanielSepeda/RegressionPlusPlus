@@ -1,13 +1,16 @@
 #ifndef TEST_HPP
 #define TEST_HPP
+#include "ReadCSV.hpp"
+#include "Linear.hpp"
 
-#include "test.hpp"
 
 class tempTest
 {
 public:
 	tempTest();
 	void Test1();
+	void Test2();
+	void Test3();
 };
 
 #endif // !TEST_HPP
