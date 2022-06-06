@@ -1,17 +1,20 @@
 #ifndef LINEAR_HPP
 #define LINEAR_HPP
 #include <Eigen/Dense>
+#include <iostream>
+
 
 struct SimpleLinearModel
 {
 	float beta_hat_0;
 	float beta_hat_1;
+	void operator = (const SimpleLinearModel& slm);
 };
 
 class Predictor {
 public:
-	template <typename T>
-	T UseSLM(const SimpleLinearModel& slm, const T x);
+	//template <typename T>
+	float UseSLM(const SimpleLinearModel& slm, const float x);
 };
 
 class Builder

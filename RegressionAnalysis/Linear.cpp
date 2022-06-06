@@ -1,10 +1,15 @@
 #include "Linear.hpp"
 
-
-template <typename T>
-T Predictor::UseSLM(const SimpleLinearModel& slm, const T x)
+void SimpleLinearModel::operator=(const SimpleLinearModel& slm)
 {
-	T estimated_y{ slm.beta_hat_0 + (slm.beta_hat_1 * x) };
+	this->beta_hat_0 = slm.beta_hat_0;
+	this->beta_hat_1 = slm.beta_hat_1;
+}
+
+//template <typename T>
+float Predictor::UseSLM(const SimpleLinearModel& slm, const float x)
+{
+	float estimated_y = slm.beta_hat_0 + (slm.beta_hat_1 * x);
 	return estimated_y;
 }
 
@@ -18,11 +23,17 @@ SimpleLinearModel Builder::MakeSLM(const Eigen::VectorXf& x, const Eigen::Vector
 	{
 		throw std::exception("x size not equal y size");
 	}
+	
 	SimpleLinearModel slm;
+
 	const float x_mean{ x.sum() / (x.size() - 1) };
+
 	const float y_mean{ y.sum() / (y.size() - 1) };
+	
 	slm.beta_hat_1 = this->BetaHat1(x, y);
+	
 	slm.beta_hat_0 = this->BetaHat0(slm.beta_hat_1, y_mean, x_mean);
+
 	return slm;
 }
 
@@ -44,9 +55,10 @@ float Builder::Sxx(const Eigen::VectorXf& x)
 		//No op
 	}
 	/*this implentation uses the Sum of x^2 - (the Sum of all x )^2 / n*/
-	const float sum_xx{ (x * x).sum() };
+	const float sum_xx{ (x.transpose() * x).sum() };
 	const float mean_sum_x_squared{ (x.sum() * x.sum()) / x.size() };
 	const float s_xx{ sum_xx - mean_sum_x_squared };
+
 	return s_xx;
 }
 
@@ -71,10 +83,14 @@ float Builder::Sxy(const Eigen::VectorXf& x, const Eigen::VectorXf& y)
 	{
 		//No op
 	}
+	
 	/* this implementaion uses (x dot y)^2 minus (sum x * sum y)/n */
-	const float sum_xy{ (x * y).sum() };
-	const float sum_x_sum_y_n{ (x.sum() * y.sum()) / x.size() };
+	const float sum_xy = (x.transpose() * y).sum();
+
+	const float sum_x_sum_y_n=  (x.sum() * y.sum()) / x.size();
+	
 	const float s_xy{ sum_xy - sum_x_sum_y_n };
+	
 	return s_xy;
 }
 
@@ -98,7 +114,8 @@ float Builder::BetaHat1(const Eigen::VectorXf& x, const Eigen::VectorXf& y)
 	{
 		//No op
 	}
-	const float beta_hat_1{ this->Sxx(x)/ this->Sxy(x,y) };
+
+	const float beta_hat_1 = this->Sxx(x) / this->Sxy(x,y);
 	return beta_hat_1;
 }
 
